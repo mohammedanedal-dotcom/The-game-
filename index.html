@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Falak's Arcade 🎟️</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/tabler-icons.min.css">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f5f3;
+    --bg-tertiary: #eeede9;
+    --text-primary: #1a1a18;
+    --text-secondary: #6b6b67;
+    --border: rgba(0,0,0,0.12);
+    --border-md: rgba(0,0,0,0.22);
+    --radius-md: 8px;
+    --radius-lg: 12px;
+    --radius-xl: 16px;
+    --amber-light: #FAEEDA;
+    --amber-mid: #FAC775;
+    --amber-strong: #EF9F27;
+    --amber-dark: #412402;
+    --amber-text: #854F0B;
+    --teal-light: #E1F5EE;
+    --teal-mid: #1D9E75;
+    --teal-dark: #085041;
+    --green-light: #EAF3DE;
+    --green-text: #3B6D11;
+    --orange-light: #FAECE7;
+    --orange-text: #993C1D;
+    --red-light: #FCEBEB;
+    --red-text: #A32D2D;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg-primary: #1e1e1c;
+      --bg-secondary: #272725;
+      --bg-tertiary: #2e2e2b;
+      --text-primary: #f0efe9;
+      --text-secondary: #9a9994;
+      --border: rgba(255,255,255,0.1);
+      --border-md: rgba(255,255,255,0.2);
+      --amber-light: #3a2800;
+      --amber-mid: #c4800a;
+      --amber-strong: #d4890f;
+      --amber-dark: #ffe0a0;
+      --amber-text: #FAC775;
+      --teal-light: #04342C;
+      --teal-mid: #1D9E75;
+      --teal-dark: #9FE1CB;
+      --green-light: #173404;
+      --green-text: #C0DD97;
+      --orange-light: #4A1B0C;
+      --orange-text: #F0997B;
+      --red-light: #501313;
+      --red-text: #F09595;
+    }
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background: var(--bg-tertiary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    padding: 0 0 80px;
+  }
+
+  .page-header {
+    background: var(--bg-primary);
+    border-bottom: 0.5px solid var(--border);
+    padding: 1rem 1.25rem 0;
+    position: sticky; top: 0; z-index: 50;
+  }
+  .header-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 1rem;
+  }
+  .app-title {
+    font-size: 20px; font-weight: 600; color: var(--text-primary);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .stats-row {
+    display: flex; gap: 10px;
+  }
+  .stat-pill {
+    background: var(--bg-secondary);
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 13px;
+    display: flex; align-items: center; gap: 5px;
+  }
+  .stat-pill strong { font-weight: 600; }
+
+  .tabs {
+    display: flex; gap: 0;
+    margin-top: 0.75rem;
+  }
+  .tab {
+    flex: 1; padding: 10px 8px;
+    border: none; background: transparent;
+    font-size: 14px; color: var(--text-secondary);
+    cursor: pointer; font-family: inherit;
+    border-bottom: 2px solid transparent;
+    transition: all 0.15s;
+    display: flex; align-items: center; justify-content: center; gap: 5px;
+  }
+  .tab.active {
+    color: var(--text-primary);
+    border-bottom-color: var(--amber-strong);
+    font-weight: 500;
+  }
+  .tab i { font-size: 16px; }
+
+  .content { padding: 1rem 1.25rem; max-width: 680px; margin: 0 auto; }
+
+  .section { display: none; }
+  .section.visible { display: block; }
+
+  .section-label {
+    font-size: 11px; font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.07em;
+    color: var(--text-secondary);
+    margin: 1.25rem 0 8px;
+  }
+  .section-label:first-child { margin-top: 0; }
+
+  .exercise-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.875rem 1rem;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .ex-emoji {
+    width: 42px; height: 42px;
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; flex-shrink: 0;
+  }
+  .ex-info { flex: 1; min-width: 0; }
+  .ex-name { font-size: 15px; font-weight: 500; }
+  .ex-meta { font-size: 12px; color: var(--text-secondary); margin-top: 1px; }
+  .ex-controls {
+    display: flex; align-items: center; gap: 8px; flex-shrink: 0;
+  }
+  .set-group { display: flex; align-items: center; gap: 4px; }
+  .set-btn {
+    width: 26px; height: 26px;
+    border: 0.5px solid var(--border-md);
+    background: var(--bg-secondary);
+    border-radius: 50%;
+    font-size: 16px; line-height: 1;
+    cursor: pointer; color: var(--text-primary);
+    display: flex; align-items: center; justify-content: center;
+  }
+  .set-btn:hover { background: var(--bg-tertiary); }
+  .set-label {
+    font-size: 13px; font-weight: 500; min-width: 40px; text-align: center;
+    color: var(--text-secondary);
+  }
+  .tix-badge {
+    font-size: 12px; font-weight: 600;
+    background: var(--amber-light); color: var(--amber-text);
+    padding: 3px 10px; border-radius: 20px;
+    white-space: nowrap;
+  }
+  .earn-btn {
+    padding: 7px 14px;
+    background: var(--teal-mid); color: var(--teal-light);
+    border: none; border-radius: var(--radius-md);
+    font-size: 13px; font-weight: 500;
+    cursor: pointer; font-family: inherit;
+    white-space: nowrap; flex-shrink: 0;
+    transition: background 0.15s, transform 0.1s;
+  }
+  .earn-btn:hover { background: var(--teal-dark); }
+  .earn-btn:active { transform: scale(0.97); }
+  .earn-btn.flashed {
+    background: var(--teal-dark);
+  }
+
+  @media (max-width: 520px) {
+    .exercise-card { flex-wrap: wrap; }
+    .ex-controls { width: 100%; justify-content: space-between; }
+  }
+
+  .prize-card {
+    background: var(--bg-primary);
+    border: 0.5px solid var(--border);
+    border-radius: var(--radius-lg);
+    padding: 0.875rem 1rem;
+    margin-bottom: 8px;
+    display: flex; align-items: center; gap: 10px;
+  }
+  .prize-emoji {
+    width: 44px; height: 44px;
+    background: var(--bg-secondary);
+    border-radius: var(--radius-md);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .prize-info { flex: 1; min-width: 0; }
+  .prize-name { font-size: 15px; font-weight: 500; }
+  .prize-sub { font-size: 12px; color: var(--text-secondary); margin-top: 2px; }
+  .prize-bar-track {
+    height: 4px; background: var(--bg-tertiary);
+    border-radius: 2px; margin-top: 8px; overflow: hidden;
+  }
+  .prize-bar-fill { height: 100%; background: var(--amber-mid); border-radius: 2px; transition: width 0.5s ease; }
+  .redeem-btn {
+    padding: 8px 14px;
+    border: 0.5px solid var(--border-md);
+    background: var(--bg-secondary); color: var(--text-secondary);
+    border-radius: var(--radius-md);
+    font-size: 13px; cursor: pointer; font-family: inherit;
+    white-space: nowrap; flex-shrink: 0;
+    transition: all 0.15s;
+  }
+  .redeem-btn.ready {
+    background: var(--amber-mid); color: var(--amber-dark);
+    border-color: var(--amber-strong); font-weight: 600;
+  }
+  .redeem-btn.ready:hover { background: var(--amber-strong); }
+  .redeem-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+  .log-empty {
+    text-align: center; color: var(--text-secondary);
+    font-size: 15px; padding: 3rem 0;
+  }
+  .log-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 11px 0;
+    border-bottom: 0.5px solid var(--border);
+    font-size: 13px;
+  }
+  .log-item:last-child { border-bottom: none; }
+  .log-emoji { font-size: 18px; flex-shrink: 0; }
+  .log-main { flex: 1; min-width: 0; }
+  .log-name { color: var(--text-primary); font-size: 14px; }
+  .log-detail { color: var(--text-secondary); font-size: 11px; margin-top: 1px; }
+  .log-right { display: flex; flex-direction: column; align-items: flex-end; gap: 2px; }
+  .log-tix { font-weight: 600; font-size: 13px; }
+  .log-time { color: var(--text-secondary); font-size: 11px; }
+
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.45); z-index: 200;
+    align-items: center; justify-content: center; padding: 1rem;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--bg-primary);
+    border-radius: var(--radius-xl);
+    border: 0.5px solid var(--border);
+    padding: 1.75rem 1.5rem 1.5rem;
+    max-width: 320px; width: 100%;
+    text-align: center;
+  }
+  .modal-icon { font-size: 44px; margin-bottom: 10px; }
+  .modal-title { font-size: 18px; font-weight: 600; margin-bottom: 6px; }
+  .modal-sub { font-size: 14px; color: var(--text-secondary); margin-bottom: 1.5rem; line-height: 1.5; }
+  .modal-actions { display: flex; gap: 8px; }
+  .modal-cancel {
+    flex: 1; padding: 10px;
+    border: 0.5px solid var(--border-md);
+    background: var(--bg-secondary); color: var(--text-primary);
+    border-radius: var(--radius-md);
+    font-size: 14px; cursor: pointer; font-family: inherit;
+  }
+  .modal-ok {
+    flex: 1; padding: 10px;
+    background: var(--amber-mid); color: var(--amber-dark);
+    border: none; border-radius: var(--radius-md);
+    font-size: 14px; font-weight: 600; cursor: pointer; font-family: inherit;
+  }
+  .modal-ok:hover { background: var(--amber-strong); }
+
+  .toast {
+    position: fixed; bottom: 24px; left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: var(--teal-dark); color: var(--teal-light);
+    padding: 10px 22px; border-radius: 24px;
+    font-size: 14px; font-weight: 500;
+    transition: transform 0.3s cubic-bezier(.22,.68,0,1.2);
+    z-index: 300; white-space: nowrap;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<header class="page-header">
+  <div class="header-top">
+    <div>
+      <div class="app-title">Welcome To Falak's Arcade 🎟️</div>
+      <div style="font-size:12px;color:var(--text-secondary);margin-top:2px;">Earn tickets for your workouts and claim lovely prizes</div>
+    </div>
+    <div class="stats-row">
+      <div class="stat-pill">🎟️ <strong id="hdr-tickets">0</strong></div>
+      <div class="stat-pill">🔥 <strong id="hdr-streak">0</strong></div>
+    </div>
+  </div>
+  <nav class="tabs">
+    <button class="tab active" onclick="switchTab('workout',this)">
+      <i class="ti ti-barbell"></i> Workout
+    </button>
+    <button class="tab" onclick="switchTab('prizes',this)">
+      <i class="ti ti-gift"></i> Prizes
+    </button>
+    <button class="tab" onclick="switchTab('log',this)">
+      <i class="ti ti-clock-hour-4"></i> History
+    </button>
+  </nav>
+</header>
+
+<main class="content">
+
+  <!-- WORKOUT TAB -->
+  <div id="tab-workout" class="section visible">
+    <p class="section-label">Easy — 2 tickets / set</p>
+    <div id="ex-easy"></div>
+    <p class="section-label">Medium — 4 tickets / set</p>
+    <div id="ex-medium"></div>
+    <p class="section-label">Hard — 7 tickets / set</p>
+    <div id="ex-hard"></div>
+  </div>
+
+  <!-- PRIZES TAB -->
+  <div id="tab-prizes" class="section">
+    <p class="section-label">Prize booth</p>
+    <div id="prizes-list"></div>
+  </div>
+
+  <!-- LOG TAB -->
+  <div id="tab-log" class="section">
+    <p class="section-label">Activity log</p>
+    <div id="log-list"></div>
+  </div>
+
+</main>
+
+<!-- Redeem modal -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <div class="modal-icon">🎁</div>
+    <div class="modal-title" id="modal-title">Redeem prize?</div>
+    <div class="modal-sub" id="modal-sub"></div>
+    <div class="modal-actions">
+      <button class="modal-cancel" onclick="closeModal()">Cancel</button>
+      <button class="modal-ok" id="modal-ok">Redeem!</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const EXERCISES = [
+  { id:'walk',    name:'Walking',        emoji:'🚶', diff:'easy',   tix:2, meta:'Light cardio' },
+  { id:'stretch', name:'Stretching',     emoji:'🧘', diff:'easy',   tix:2, meta:'Flexibility & recovery' },
+  { id:'jacks',   name:'Jumping jacks',  emoji:'⚡', diff:'easy',   tix:2, meta:'Full body warm-up' },
+  { id:'pushup',  name:'Push-ups',       emoji:'💪', diff:'medium', tix:4, meta:'Upper body strength' },
+  { id:'squat',   name:'Squats',         emoji:'🦵', diff:'medium', tix:4, meta:'Leg & glute power' },
+  { id:'plank',   name:'Plank hold',     emoji:'🪨', diff:'medium', tix:4, meta:'Core stability' },
+  { id:'run',     name:'Running',        emoji:'🏃', diff:'hard',   tix:7, meta:'High intensity cardio' },
+  { id:'burpee',  name:'Burpees',        emoji:'🔥', diff:'hard',   tix:7, meta:'Full body conditioning' },
+  { id:'pullup',  name:'Pull-ups',       emoji:'🏋️', diff:'hard',   tix:7, meta:'Back & arm strength' },
+];
+
+const PRIZES = [
+  { id:'coffee',  name:'Coffee treat',        emoji:'☕', cost:20 },
+  { id:'movie',   name:'Movie night pick',     emoji:'🎬', cost:50 },
+  { id:'meal',    name:'Cheat meal of choice', emoji:'🍔', cost:80 },
+  { id:'spa',     name:'Spa / massage session',emoji:'💆', cost:150 },
+  { id:'shoes',   name:'New workout gear',     emoji:'👟', cost:300 },
+];
+
+const DIFF_BG = { easy: '#EAF3DE', medium: '#FAEEDA', hard: '#FAECE7' };
+
+let state = {
+  tickets: 0,
+  lifetimeTickets: 0,
+  streak: 0,
+  lastDate: null,
+  sets: {},
+  log: [],
+  redeemed: {}
+};
+
+function load() {
+  try {
+    const s = localStorage.getItem('wa-v1');
+    if (s) state = { ...state, ...JSON.parse(s) };
+  } catch(e) {}
+  EXERCISES.forEach(e => { if (!state.sets[e.id]) state.sets[e.id] = 1; });
+}
+
+function save() {
+  try { localStorage.setItem('wa-v1', JSON.stringify(state)); } catch(e) {}
+}
+
+function today() { return new Date().toDateString(); }
+
+function switchTab(id, btn) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + id).classList.add('visible');
+  btn.classList.add('active');
+  if (id === 'log') renderLog();
+  if (id === 'prizes') renderPrizes();
+}
+
+function updateHeader() {
+  document.getElementById('hdr-tickets').textContent = state.tickets;
+  document.getElementById('hdr-streak').textContent = state.streak;
+}
+
+let toastTimer;
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+}
+
+function renderExercises() {
+  ['easy','medium','hard'].forEach(diff => {
+    const el = document.getElementById('ex-' + diff);
+    el.innerHTML = EXERCISES.filter(e => e.diff === diff).map(ex => `
+      <div class="exercise-card">
+        <div class="ex-emoji" style="background:${DIFF_BG[diff]}">${ex.emoji}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">${ex.meta}</div>
+        </div>
+        <div class="ex-controls">
+          <div class="set-group">
+            <button class="set-btn" onclick="changeSets('${ex.id}',-1)">−</button>
+            <span class="set-label" id="sets-${ex.id}">${state.sets[ex.id]} set${state.sets[ex.id]>1?'s':''}</span>
+            <button class="set-btn" onclick="changeSets('${ex.id}',1)">+</button>
+          </div>
+          <span class="tix-badge" id="tix-${ex.id}">🎟️ ${ex.tix * state.sets[ex.id]}</span>
+          <button class="earn-btn" id="earn-${ex.id}" onclick="earn('${ex.id}')">Earn</button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+function changeSets(id, delta) {
+  state.sets[id] = Math.max(1, Math.min(10, state.sets[id] + delta));
+  const ex = EXERCISES.find(e => e.id === id);
+  const s = state.sets[id];
+  document.getElementById('sets-' + id).textContent = s + ' set' + (s > 1 ? 's' : '');
+  document.getElementById('tix-' + id).textContent = '🎟️ ' + (ex.tix * s);
+  save();
+}
+
+function earn(id) {
+  const ex = EXERCISES.find(e => e.id === id);
+  const sets = state.sets[id];
+  const earned = ex.tix * sets;
+  state.tickets += earned;
+  state.lifetimeTickets += earned;
+
+  const t = today();
+  if (state.lastDate !== t) {
+    const yest = new Date(); yest.setDate(yest.getDate() - 1);
+    state.streak = (state.lastDate === yest.toDateString()) ? state.streak + 1 : 1;
+    state.lastDate = t;
+  }
+
+  state.log.unshift({
+    name: ex.name, emoji: ex.emoji, sets, earned,
+    time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+  });
+  if (state.log.length > 100) state.log.pop();
+
+  save(); updateHeader(); renderPrizes();
+  showToast(`+${earned} tickets for ${sets} set${sets>1?'s':''} of ${ex.name}! 💪`);
+
+  const btn = document.getElementById('earn-' + id);
+  btn.textContent = '+' + earned + '!';
+  btn.classList.add('flashed');
+  setTimeout(() => { btn.textContent = 'Earn'; btn.classList.remove('flashed'); }, 1400);
+}
+
+function renderPrizes() {
+  document.getElementById('prizes-list').innerHTML = PRIZES.map(p => {
+    const pct = Math.min(100, Math.round((state.lifetimeTickets / p.cost) * 100));
+    const can = state.tickets >= p.cost;
+    const rc = state.redeemed[p.id] || 0;
+    return `
+      <div class="prize-card">
+        <div class="prize-emoji">${p.emoji}</div>
+        <div class="prize-info">
+          <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+            <span class="prize-name">${p.name}</span>
+            ${rc > 0 ? `<span style="font-size:11px;background:var(--bg-secondary);color:var(--text-secondary);padding:2px 8px;border-radius:12px;">×${rc} redeemed</span>` : ''}
+          </div>
+          <div class="prize-sub">🎟️ ${p.cost} tickets · You have ${state.tickets}</div>
+          <div class="prize-bar-track">
+            <div class="prize-bar-fill" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <button class="redeem-btn ${can ? 'ready' : ''}"
+          onclick="${can ? `openModal('${p.id}')` : ''}"
+          ${!can ? 'disabled' : ''}>
+          ${can ? '🎁 Redeem' : `${p.cost - state.tickets} more`}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function renderLog() {
+  const el = document.getElementById('log-list');
+  if (!state.log.length) {
+    el.innerHTML = '<div class="log-empty">No workouts yet — go earn some tickets! 💪</div>';
+    return;
+  }
+  el.innerHTML = state.log.map(e => `
+    <div class="log-item">
+      <div class="log-emoji">${e.emoji}</div>
+      <div class="log-main">
+        <div class="log-name">${e.name}</div>
+        <div class="log-detail">${e.sets > 0 ? e.sets + ' set' + (e.sets > 1 ? 's' : '') : 'Prize redeemed'}</div>
+      </div>
+      <div class="log-right">
+        <span class="log-tix" style="color:${e.earned >= 0 ? 'var(--teal-mid)' : 'var(--red-text)'}">
+          ${e.earned >= 0 ? '+' : ''}${e.earned} 🎟️
+        </span>
+        <span class="log-time">${e.time}</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+let pendingPrize = null;
+function openModal(id) {
+  pendingPrize = id;
+  const p = PRIZES.find(x => x.id === id);
+  document.getElementById('modal-title').textContent = 'Redeem ' + p.name + '?';
+  document.getElementById('modal-sub').textContent =
+    `This will use ${p.cost} of your ${state.tickets} tickets. You'll have ${state.tickets - p.cost} left.`;
+  document.getElementById('modal-ok').onclick = doRedeem;
+  document.getElementById('modal').classList.add('open');
+}
+function closeModal() {
+  document.getElementById('modal').classList.remove('open');
+  pendingPrize = null;
+}
+function doRedeem() {
+  const p = PRIZES.find(x => x.id === pendingPrize);
+  state.tickets -= p.cost;
+  state.redeemed[p.id] = (state.redeemed[p.id] || 0) + 1;
+  state.log.unshift({
+    name: 'Redeemed: ' + p.name, emoji: p.emoji, sets: 0,
+    earned: -p.cost,
+    time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+  });
+  save(); updateHeader(); renderPrizes(); closeModal();
+  showToast('🎉 Enjoy your ' + p.name + '!');
+}
+
+load();
+renderExercises();
+renderPrizes();
+updateHeader();
+</script>
+</body>
+</html>
