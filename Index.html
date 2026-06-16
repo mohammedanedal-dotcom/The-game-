@@ -1,0 +1,555 @@
+
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font-sans); }
+
+.arcade-wrap { padding: 1rem 0; }
+
+.ticker-banner {
+  background: var(--color-background-secondary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  gap: 1rem;
+}
+.ticket-count {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ticket-icon {
+  width: 48px; height: 48px;
+  background: #FAC775;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+}
+.ticket-label { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 2px; }
+.ticket-num { font-size: 28px; font-weight: 500; color: var(--color-text-primary); }
+.streak-badge {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-md);
+  padding: 10px 16px;
+  text-align: center;
+}
+.streak-num { font-size: 22px; font-weight: 500; color: #BA7517; }
+.streak-label { font-size: 12px; color: var(--color-text-secondary); }
+
+.tabs {
+  display: flex;
+  gap: 4px;
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  padding: 4px;
+  margin-bottom: 1rem;
+}
+.tab {
+  flex: 1;
+  padding: 8px 12px;
+  border: none;
+  background: transparent;
+  border-radius: calc(var(--border-radius-md) - 2px);
+  font-size: 14px;
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  font-family: var(--font-sans);
+  transition: all 0.15s;
+}
+.tab.active {
+  background: var(--color-background-primary);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  border: 0.5px solid var(--color-border-tertiary);
+}
+
+.section { display: none; }
+.section.visible { display: block; }
+
+.exercise-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.ex-icon {
+  width: 40px; height: 40px;
+  border-radius: var(--border-radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.ex-info { flex: 1; }
+.ex-name { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.ex-meta { font-size: 12px; color: var(--color-text-secondary); margin-top: 2px; }
+.ex-right { display: flex; align-items: center; gap: 10px; }
+.tickets-per { 
+  font-size: 13px; font-weight: 500; 
+  color: #BA7517;
+  background: #FAEEDA;
+  padding: 4px 10px;
+  border-radius: 20px;
+  white-space: nowrap;
+}
+.set-controls {
+  display: flex; align-items: center; gap: 6px;
+}
+.set-btn {
+  width: 28px; height: 28px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  border-radius: 50%;
+  font-size: 16px;
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  color: var(--color-text-primary);
+  font-family: var(--font-sans);
+}
+.set-btn:hover { background: var(--color-background-primary); }
+.set-num { font-size: 15px; font-weight: 500; min-width: 16px; text-align: center; color: var(--color-text-primary); }
+.earn-btn {
+  padding: 6px 14px;
+  background: #1D9E75;
+  color: #E1F5EE;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+}
+.earn-btn:hover { background: #0F6E56; }
+.earn-btn:active { transform: scale(0.97); }
+
+.diff-badge {
+  font-size: 11px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-weight: 500;
+  flex-shrink: 0;
+}
+.diff-easy { background: #EAF3DE; color: #3B6D11; }
+.diff-medium { background: #FAEEDA; color: #854F0B; }
+.diff-hard { background: #FAECE7; color: #993C1D; }
+
+.prize-card {
+  background: var(--color-background-primary);
+  border: 0.5px solid var(--color-border-tertiary);
+  border-radius: var(--border-radius-lg);
+  padding: 1rem 1.25rem;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.prize-icon {
+  width: 44px; height: 44px;
+  border-radius: var(--border-radius-md);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 22px;
+  background: var(--color-background-secondary);
+  flex-shrink: 0;
+}
+.prize-info { flex: 1; }
+.prize-name { font-size: 15px; font-weight: 500; color: var(--color-text-primary); }
+.prize-cost { font-size: 13px; color: var(--color-text-secondary); margin-top: 2px; }
+.prize-progress {
+  width: 100%;
+  height: 4px;
+  background: var(--color-background-secondary);
+  border-radius: 2px;
+  margin-top: 8px;
+  overflow: hidden;
+}
+.prize-bar { height: 100%; background: #FAC775; border-radius: 2px; transition: width 0.4s; }
+.redeem-btn {
+  padding: 8px 16px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  color: var(--color-text-secondary);
+  border-radius: var(--border-radius-md);
+  font-size: 13px;
+  cursor: pointer;
+  font-family: var(--font-sans);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.redeem-btn.can-redeem {
+  background: #FAC775;
+  color: #412402;
+  border-color: #EF9F27;
+  font-weight: 500;
+}
+.redeem-btn.can-redeem:hover { background: #EF9F27; }
+
+.log-entry {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+  border-bottom: 0.5px solid var(--color-border-tertiary);
+  font-size: 13px;
+}
+.log-entry:last-child { border-bottom: none; }
+.log-tickets { color: #1D9E75; font-weight: 500; margin-left: auto; }
+.log-time { color: var(--color-text-secondary); font-size: 11px; min-width: 64px; text-align: right; }
+.log-dot {
+  width: 8px; height: 8px;
+  background: #1D9E75;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.empty-log { color: var(--color-text-secondary); font-size: 14px; text-align: center; padding: 2rem 0; }
+
+.toast {
+  position: fixed; bottom: 20px; left: 50%; transform: translateX(-50%) translateY(100px);
+  background: #085041; color: #E1F5EE;
+  padding: 10px 20px; border-radius: var(--border-radius-md);
+  font-size: 14px; font-weight: 500;
+  transition: transform 0.3s; z-index: 999;
+  white-space: nowrap;
+}
+.toast.show { transform: translateX(-50%) translateY(0); }
+
+.section-label {
+  font-size: 11px; font-weight: 500;
+  text-transform: uppercase; letter-spacing: 0.06em;
+  color: var(--color-text-secondary);
+  margin-bottom: 10px; margin-top: 4px;
+}
+
+.redeem-confirm {
+  display: none;
+  position: fixed; inset: 0;
+  background: rgba(0,0,0,0.4);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+}
+.redeem-confirm.open { display: flex; }
+.confirm-box {
+  background: var(--color-background-primary);
+  border-radius: var(--border-radius-lg);
+  border: 0.5px solid var(--color-border-tertiary);
+  padding: 1.5rem;
+  max-width: 300px;
+  width: 90%;
+  text-align: center;
+}
+.confirm-icon { font-size: 36px; margin-bottom: 8px; }
+.confirm-title { font-size: 17px; font-weight: 500; margin-bottom: 6px; color: var(--color-text-primary); }
+.confirm-sub { font-size: 13px; color: var(--color-text-secondary); margin-bottom: 1.25rem; }
+.confirm-actions { display: flex; gap: 8px; }
+.confirm-cancel {
+  flex: 1; padding: 9px;
+  border: 0.5px solid var(--color-border-secondary);
+  background: var(--color-background-secondary);
+  border-radius: var(--border-radius-md);
+  font-size: 14px; cursor: pointer;
+  font-family: var(--font-sans);
+  color: var(--color-text-primary);
+}
+.confirm-ok {
+  flex: 1; padding: 9px;
+  background: #FAC775; color: #412402;
+  border: none;
+  border-radius: var(--border-radius-md);
+  font-size: 14px; font-weight: 500; cursor: pointer;
+  font-family: var(--font-sans);
+}
+</style>
+
+<div class="arcade-wrap">
+  <h2 class="sr-only">Workout ticket arcade — earn tickets for exercises, redeem for prizes</h2>
+
+  <div class="ticker-banner">
+    <div class="ticket-count">
+      <div class="ticket-icon">🎟️</div>
+      <div>
+        <div class="ticket-label">Tickets earned</div>
+        <div class="ticket-num" id="total-tickets">0</div>
+      </div>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <div class="streak-badge">
+        <div class="streak-num" id="streak-num">0</div>
+        <div class="streak-label">day streak 🔥</div>
+      </div>
+      <div class="streak-badge">
+        <div class="streak-num" id="lifetime-tickets">0</div>
+        <div class="streak-label">lifetime tickets</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab active" onclick="switchTab('workout')"><i class="ti ti-barbell" aria-hidden="true"></i> Workout</button>
+    <button class="tab" onclick="switchTab('prizes')"><i class="ti ti-gift" aria-hidden="true"></i> Prize booth</button>
+    <button class="tab" onclick="switchTab('log')"><i class="ti ti-clock" aria-hidden="true"></i> History</button>
+  </div>
+
+  <div id="tab-workout" class="section visible">
+    <div class="section-label">Easy (2 tickets/set)</div>
+    <div id="exercises-easy"></div>
+    <div class="section-label" style="margin-top:1rem;">Medium (4 tickets/set)</div>
+    <div id="exercises-medium"></div>
+    <div class="section-label" style="margin-top:1rem;">Hard (7 tickets/set)</div>
+    <div id="exercises-hard"></div>
+  </div>
+
+  <div id="tab-prizes" class="section">
+    <div id="prizes-list"></div>
+  </div>
+
+  <div id="tab-log" class="section">
+    <div id="log-list"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<div class="redeem-confirm" id="confirm-modal">
+  <div class="confirm-box">
+    <div class="confirm-icon">🎁</div>
+    <div class="confirm-title" id="confirm-title">Redeem prize?</div>
+    <div class="confirm-sub" id="confirm-sub">This will use your tickets.</div>
+    <div class="confirm-actions">
+      <button class="confirm-cancel" onclick="closeConfirm()">Cancel</button>
+      <button class="confirm-ok" id="confirm-ok">Redeem!</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const EXERCISES = [
+  { id:'walk', name:'Walking', emoji:'🚶', diff:'easy', tickets:2, meta:'Light cardio' },
+  { id:'stretch', name:'Stretching', emoji:'🧘', diff:'easy', tickets:2, meta:'Flexibility & recovery' },
+  { id:'jump', name:'Jumping jacks', emoji:'⚡', diff:'easy', tickets:2, meta:'Full body warm-up' },
+  { id:'push', name:'Push-ups', emoji:'💪', diff:'medium', tickets:4, meta:'Upper body strength' },
+  { id:'squat', name:'Squats', emoji:'🦵', diff:'medium', tickets:4, meta:'Leg & glute power' },
+  { id:'plank', name:'Plank hold', emoji:'🪨', diff:'medium', tickets:4, meta:'Core stability' },
+  { id:'run', name:'Running', emoji:'🏃', diff:'hard', tickets:7, meta:'High intensity cardio' },
+  { id:'burpee', name:'Burpees', emoji:'🔥', diff:'hard', tickets:7, meta:'Full body conditioning' },
+  { id:'pullup', name:'Pull-ups', emoji:'🏋️', diff:'hard', tickets:7, meta:'Back & arm strength' },
+];
+
+const PRIZES = [
+  { id:'coffee', name:'Coffee treat', emoji:'☕', cost:20 },
+  { id:'movie', name:'Movie night pick', emoji:'🎬', cost:50 },
+  { id:'meal', name:'Cheat meal of choice', emoji:'🍔', cost:80 },
+  { id:'spa', name:'Spa / massage session', emoji:'💆', cost:150 },
+  { id:'shoes', name:'New workout gear', emoji:'👟', cost:300 },
+];
+
+let state = {
+  tickets: 0,
+  lifetimeTickets: 0,
+  streak: 0,
+  lastWorkoutDate: null,
+  sets: {},
+  log: [],
+  redeemedPrizes: {}
+};
+
+function loadState() {
+  try {
+    const s = localStorage.getItem('workout-arcade-v1');
+    if (s) state = JSON.parse(s);
+  } catch(e) {}
+  EXERCISES.forEach(ex => { if (!state.sets[ex.id]) state.sets[ex.id] = 1; });
+}
+
+function saveState() {
+  try { localStorage.setItem('workout-arcade-v1', JSON.stringify(state)); } catch(e) {}
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('visible'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('visible');
+  event.target.closest('.tab').classList.add('active');
+  if (tab === 'log') renderLog();
+  if (tab === 'prizes') renderPrizes();
+}
+
+function updateHeader() {
+  document.getElementById('total-tickets').textContent = state.tickets;
+  document.getElementById('lifetime-tickets').textContent = state.lifetimeTickets;
+  document.getElementById('streak-num').textContent = state.streak;
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+function earnTickets(exId) {
+  const ex = EXERCISES.find(e => e.id === exId);
+  const sets = state.sets[exId];
+  const earned = ex.tickets * sets;
+  state.tickets += earned;
+  state.lifetimeTickets += earned;
+
+  const today = new Date().toDateString();
+  if (state.lastWorkoutDate !== today) {
+    const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
+    if (state.lastWorkoutDate === yesterday.toDateString()) {
+      state.streak += 1;
+    } else if (state.lastWorkoutDate !== today) {
+      state.streak = 1;
+    }
+    state.lastWorkoutDate = today;
+  }
+
+  state.log.unshift({
+    name: ex.name, emoji: ex.emoji, sets, earned,
+    time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+  });
+  if (state.log.length > 50) state.log.pop();
+
+  saveState();
+  updateHeader();
+  renderPrizes();
+  showToast(`+${earned} tickets for ${sets} set${sets>1?'s':''} of ${ex.name}!`);
+
+  const btn = document.getElementById('earn-' + exId);
+  if (btn) {
+    btn.textContent = '+' + earned + ' earned!';
+    btn.style.background = '#085041';
+    setTimeout(() => { btn.textContent = 'Earn tickets'; btn.style.background = ''; }, 1200);
+  }
+}
+
+function changeSets(exId, delta) {
+  state.sets[exId] = Math.max(1, Math.min(10, (state.sets[exId]||1) + delta));
+  document.getElementById('sets-' + exId).textContent = state.sets[exId];
+  const ex = EXERCISES.find(e => e.id === exId);
+  document.getElementById('tix-' + exId).textContent = (ex.tickets * state.sets[exId]) + ' tickets';
+  saveState();
+}
+
+function renderExercises() {
+  ['easy','medium','hard'].forEach(diff => {
+    const container = document.getElementById('exercises-' + diff);
+    const exList = EXERCISES.filter(e => e.diff === diff);
+    container.innerHTML = exList.map(ex => `
+      <div class="exercise-card">
+        <div class="ex-icon" style="background:${diff==='easy'?'#EAF3DE':diff==='medium'?'#FAEEDA':'#FAECE7'}">${ex.emoji}</div>
+        <div class="ex-info">
+          <div class="ex-name">${ex.name}</div>
+          <div class="ex-meta">${ex.meta}</div>
+        </div>
+        <div class="ex-right">
+          <div>
+            <div class="set-controls">
+              <button class="set-btn" onclick="changeSets('${ex.id}',-1)">−</button>
+              <span class="set-num" id="sets-${ex.id}">${state.sets[ex.id]||1}</span>
+              <button class="set-btn" onclick="changeSets('${ex.id}',1)">+</button>
+            </div>
+            <div style="text-align:center; font-size:11px; color:var(--color-text-secondary); margin-top:3px;">sets</div>
+          </div>
+          <div>
+            <div class="tickets-per" id="tix-${ex.id}">${ex.tickets * (state.sets[ex.id]||1)} tickets</div>
+          </div>
+          <button class="earn-btn" id="earn-${ex.id}" onclick="earnTickets('${ex.id}')">Earn tickets</button>
+        </div>
+      </div>
+    `).join('');
+  });
+}
+
+let pendingRedeemId = null;
+function renderPrizes() {
+  const container = document.getElementById('prizes-list');
+  container.innerHTML = PRIZES.map(prize => {
+    const pct = Math.min(100, Math.round((state.lifetimeTickets / prize.cost) * 100));
+    const canRedeem = state.tickets >= prize.cost;
+    const redeemed = (state.redeemedPrizes[prize.id] || 0);
+    return `
+      <div class="prize-card">
+        <div class="prize-icon">${prize.emoji}</div>
+        <div class="prize-info">
+          <div style="display:flex; align-items:center; gap:8px;">
+            <div class="prize-name">${prize.name}</div>
+            ${redeemed > 0 ? `<span style="font-size:11px; background:var(--color-background-secondary); color:var(--color-text-secondary); padding:2px 8px; border-radius:12px;">×${redeemed} redeemed</span>` : ''}
+          </div>
+          <div class="prize-cost">🎟️ ${prize.cost} tickets</div>
+          <div class="prize-progress">
+            <div class="prize-bar" style="width:${pct}%"></div>
+          </div>
+        </div>
+        <button class="redeem-btn ${canRedeem ? 'can-redeem' : ''}" 
+          onclick="${canRedeem ? `openConfirm('${prize.id}')` : ''}"
+          ${!canRedeem ? 'disabled style="opacity:0.5;cursor:not-allowed"' : ''}>
+          ${canRedeem ? 'Redeem!' : `${prize.cost - state.tickets} more`}
+        </button>
+      </div>
+    `;
+  }).join('');
+}
+
+function openConfirm(prizeId) {
+  const prize = PRIZES.find(p => p.id === prizeId);
+  pendingRedeemId = prizeId;
+  document.getElementById('confirm-title').textContent = 'Redeem ' + prize.name + '?';
+  document.getElementById('confirm-sub').textContent = `This uses ${prize.cost} of your ${state.tickets} tickets.`;
+  document.getElementById('confirm-ok').onclick = () => doRedeem(prizeId);
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  pendingRedeemId = null;
+}
+function doRedeem(prizeId) {
+  const prize = PRIZES.find(p => p.id === prizeId);
+  state.tickets -= prize.cost;
+  state.redeemedPrizes[prize.id] = (state.redeemedPrizes[prize.id] || 0) + 1;
+  state.log.unshift({
+    name: '🎁 Redeemed: ' + prize.name, emoji: prize.emoji, sets: 0, earned: -prize.cost,
+    time: new Date().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}), isRedeem: true
+  });
+  saveState();
+  updateHeader();
+  renderPrizes();
+  closeConfirm();
+  showToast('🎉 Enjoy your ' + prize.name + '!');
+}
+
+function renderLog() {
+  const container = document.getElementById('log-list');
+  if (!state.log.length) {
+    container.innerHTML = '<div class="empty-log">No workouts yet — go earn some tickets! 💪</div>';
+    return;
+  }
+  container.innerHTML = state.log.map(entry => `
+    <div class="log-entry">
+      <div style="font-size:18px;">${entry.emoji}</div>
+      <div>
+        <div style="color:var(--color-text-primary); font-size:13px;">${entry.name}</div>
+        ${entry.sets > 0 ? `<div style="color:var(--color-text-secondary); font-size:11px;">${entry.sets} set${entry.sets>1?'s':''}</div>` : ''}
+      </div>
+      <div class="log-tickets" style="${entry.earned < 0 ? 'color:#A32D2D' : ''}">
+        ${entry.earned > 0 ? '+' : ''}${entry.earned} 🎟️
+      </div>
+      <div class="log-time">${entry.time}</div>
+    </div>
+  `).join('');
+}
+
+loadState();
+renderExercises();
+renderPrizes();
+updateHeader();
+</script>
